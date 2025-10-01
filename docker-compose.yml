@@ -1,0 +1,17 @@
+version: "3.9"
+
+services:
+  db:                # 👈 This is your MongoDB service
+    image: mongo:7   # Official MongoDB v7 image
+    container_name: mis-mongo
+    ports:
+      - "27017:27017"     # Host port 27017 → Container port 27017
+    volumes:
+      - mis_data:/data/db # Persist MongoDB data in a named volume
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root   # Root user for initial setup
+      MONGO_INITDB_ROOT_PASSWORD: secret # Root password
+    restart: unless-stopped
+
+volumes:
+  mis_data:
