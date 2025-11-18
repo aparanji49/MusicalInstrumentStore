@@ -13,6 +13,7 @@ import Login from "./pages/Login";
 import ProtectedRoute from "./components/ProtectedRoute";
 import CheckoutPage from "./pages/Checkout";
 import CheckoutSuccess from "./pages/CheckoutSuccess";
+import MuseBotPage from "./pages/MuseBotPage";
 
 function Profile() {
   return <div className="mx-auto max-w-6xl px-4 py-10">Profile page</div>;
@@ -62,6 +63,8 @@ export default function App() {
             </ProtectedRoute>
           }
         />
+ 
+        <Route path="/ask-muse" element={<MuseBotPage />} />
         {/* 404 */}
         <Route path="*" element={<NotFound />} />
       </Routes>

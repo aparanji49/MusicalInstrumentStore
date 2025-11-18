@@ -84,6 +84,7 @@ export default function Header() {
       { to: "/collections", label: "Collections" },
       { to: "/about", label: "About" },
       { to: "/contact", label: "Contact" },
+      { to: "/ask-muse", label: "Ask MuseBot" },
     ],
     []
   );

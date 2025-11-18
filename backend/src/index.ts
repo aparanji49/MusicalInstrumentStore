@@ -7,7 +7,7 @@ import productsRouter from './routes/products.js';
 import passport from 'passport';
 import { Strategy as GoogleStrategy } from 'passport-google-oauth20';
 import session from "express-session";
-import recommendRoutes from "./routes/recommendations.js";
+import musebotRouter from './routes/musebot.js';
 // GraphQL imports
 import { ApolloServer } from '@apollo/server';
 import { expressMiddleware } from  '@as-integrations/express4';
@@ -16,6 +16,7 @@ import { ApolloServerPluginLandingPageLocalDefault } from '@apollo/server/plugin
 import { typeDefs } from './graphql/schema.js';
 import { resolvers } from './graphql/resolvers.js';
 import Stripe from "stripe";
+import rateLimit from 'express-rate-limit';
 const app = express();
 
 app.use(cors({ origin: ['http://localhost:5173'], credentials: true, }));
@@ -37,7 +38,9 @@ app.use(
 );
 
 // --- Stripe setup ---
-
+if (!process.env.STRIPE_SECRET_KEY) {
+  throw new Error("STRIPE_SECRET_KEY is not set");
+}
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY as string);
 // Endpoint to create PaymentIntent and send client secret to frontend
 app.get('/secret', async (req, res) => {
@@ -50,9 +53,6 @@ app.get('/secret', async (req, res) => {
 });
   res.json({client_secret: paymentIntent.client_secret});
 });
-
-// OpenAI setup (example usage in resolvers)
-app.use("/api/recommend", recommendRoutes);
 
 // --- Passport setup --- Google OAuth 2.0
 app.use(passport.initialize());
@@ -95,6 +95,31 @@ app.use(morgan('dev'));
 
 app.get('/api/health', (_req, res) => res.json({ ok: true }));
 app.use('/api/products', productsRouter);
+
+const musebotLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 6,                  // 20 requests per key per window
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: {
+    error:
+      "Too many MuseBot requests. Please try again in a few minutes.",
+  },
+  keyGenerator: (req, _res) => {
+    // Try to use email if available (logged-in user)
+    const user = (req as any).user as { email?: string | null } | undefined;
+    if (user?.email) {
+      return `email:${user.email}`;
+    }
+
+    // Fallback: IP-based
+    return `ip:${req.ip}`;
+  },
+});
+
+// OpenAI setup (example usage in resolvers)
+app.use('/api/musebot', musebotLimiter, musebotRouter);
+
 
 
 // Start Google OAuth
