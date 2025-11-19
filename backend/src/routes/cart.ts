@@ -1,6 +1,6 @@
 import { Router } from "express";
-import Cart from "../models/Cart";
-import Product from "../models/Product";
+import Cart from "../models/Cart.js";
+import Product from "../models/Product.js";
 
 const r = Router();
 
@@ -26,7 +26,7 @@ r.post("/items", async (req, res) => {
   const { productId, qty = 1 } = req.body as { productId: string; qty?: number };
   const cart = await getOrCreateCart((req as any).cartIdentity);
 
-  const existing = cart.items.find(i => i.product.toString() === productId);
+  const existing = cart.items.find((i:any) => i.product.toString() === productId);
   if (existing) existing.qty += qty;
   else {
     const p = await Product.findById(productId).lean();
@@ -42,11 +42,11 @@ r.patch("/items/:productId", async (req, res) => {
   const { qty } = req.body as { qty: number };
   const cart = await getOrCreateCart((req as any).cartIdentity);
 
-  const it = cart.items.find(i => i.product.toString() === productId);
+  const it = cart.items.find((i:any) => i.product.toString() === productId);
   if (!it) return res.status(404).json({ error: "Item not in cart" });
 
   if (qty <= 0) {
-    const itemToRemove = cart.items.find(i => i.product.toString() === productId);
+    const itemToRemove = cart.items.find((i:any) => i.product.toString() === productId);
     if (itemToRemove) cart.items.pull(itemToRemove._id);
   } else {
     it.qty = qty;
@@ -59,7 +59,7 @@ r.patch("/items/:productId", async (req, res) => {
 r.delete("/items/:productId", async (req, res) => {
   const { productId } = req.params;
   const cart = await getOrCreateCart((req as any).cartIdentity);
-  const itemToRemove = cart.items.find(i => i.product.toString() === productId);
+  const itemToRemove = cart.items.find((i:any) => i.product.toString() === productId);
   if (itemToRemove) cart.items.pull(itemToRemove._id);
   await cart.save();
   res.json(cart);
