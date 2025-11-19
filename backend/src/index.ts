@@ -18,8 +18,20 @@ import { resolvers } from './graphql/resolvers.js';
 import Stripe from "stripe";
 import rateLimit, { ipKeyGenerator } from 'express-rate-limit';
 const app = express();
+app.set("trust proxy", 1); // trust first proxy (if behind proxy like Heroku, Vercel, etc)
+const allowedOrigins: string[] = ["http://localhost:5173"];
 
-app.use(cors({ origin: ['http://localhost:5173'], credentials: true, }));
+if (process.env.APP_ORIGIN) {
+  allowedOrigins.push(process.env.APP_ORIGIN);
+}
+
+
+app.use(
+  cors({
+    origin: allowedOrigins,
+    credentials: true,
+  })
+);
 app.use(express.json());
 
 // --- Session cookie (dev-friendly) ---
@@ -31,7 +43,7 @@ app.use(
     cookie: {
       httpOnly: true,
       sameSite: "lax",
-      secure: false, // set true behind HTTPS/proxy in prod
+      secure:  process.env.NODE_ENV === "production",  // set true behind HTTPS/proxy in prod
       maxAge: 1000 * 60 * 60 * 24 * 7, // 7 days
     },
   })
