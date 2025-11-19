@@ -29,6 +29,9 @@ function CartIcon(props: React.SVGProps<SVGSVGElement>) {
 //     </svg>
 //   );
 // }
+
+const API_BASE_URL =
+  import.meta.env.VITE_API_BASE_URL ?? "http://localhost:4000";
 function MenuIcon(props: React.SVGProps<SVGSVGElement>) {
   return (
     <svg viewBox="0 0 24 24" width="22" height="22" {...props}>
@@ -60,7 +63,7 @@ export default function Header() {
   const count = useSelector(selectCartCount);
   // 🧠 Fetch current user once on load
   useEffect(() => {
-    fetch("http://localhost:4000/api/me", {
+    fetch(`${API_BASE_URL}/api/me`, {
       credentials: "include",
     })
       .then((r) => (r.ok ? r.json() : null))
@@ -69,7 +72,7 @@ export default function Header() {
   }, []);
 
   const handleLogout = async () => {
-    await fetch("http://localhost:4000/auth/logout", {
+    await fetch(`${API_BASE_URL}/auth/logout`, {
       method: "POST",
       credentials: "include",
     });
