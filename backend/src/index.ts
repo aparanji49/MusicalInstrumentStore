@@ -17,7 +17,10 @@ import { typeDefs } from './graphql/schema.js';
 import { resolvers } from './graphql/resolvers.js';
 import Stripe from "stripe";
 import rateLimit, { ipKeyGenerator } from 'express-rate-limit';
+
+
 const app = express();
+
 app.set("trust proxy", 1); // trust first proxy (if behind proxy like Heroku, Vercel, etc)
 const allowedOrigins: string[] = ["http://localhost:5173"];
 
