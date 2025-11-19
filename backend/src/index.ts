@@ -16,7 +16,7 @@ import { ApolloServerPluginLandingPageLocalDefault } from '@apollo/server/plugin
 import { typeDefs } from './graphql/schema.js';
 import { resolvers } from './graphql/resolvers.js';
 import Stripe from "stripe";
-import rateLimit from 'express-rate-limit';
+import rateLimit, { ipKeyGenerator } from 'express-rate-limit';
 const app = express();
 
 app.use(cors({ origin: ['http://localhost:5173'], credentials: true, }));
@@ -98,24 +98,27 @@ app.use('/api/products', productsRouter);
 
 const musebotLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 6,                  // 20 requests per key per window
+  max: 6,                   // 6 requests per window
   standardHeaders: true,
   legacyHeaders: false,
   message: {
     error:
-      "Too many MuseBot requests. Please try again in a few minutes.",
+      "Too many MuseBot requests. Please wait a few minutes and try again.",
   },
   keyGenerator: (req, _res) => {
-    // Try to use email if available (logged-in user)
+    // Use email if logged in
     const user = (req as any).user as { email?: string | null } | undefined;
     if (user?.email) {
       return `email:${user.email}`;
     }
 
-    // Fallback: IP-based
-    return `ip:${req.ip}`;
+    // Fallback to IP — IMPORTANT: use ipKeyGenerator on req.ip
+     const ip = req.ip ?? "0.0.0.0"; // fallback so TS is happy
+    return `ip:${ipKeyGenerator(ip)}`;
   },
 });
+
+
 
 // OpenAI setup (example usage in resolvers)
 app.use('/api/musebot', musebotLimiter, musebotRouter);
