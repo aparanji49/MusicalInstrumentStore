@@ -3,7 +3,7 @@ A full-stack e-commerce web application for browsing musical instruments, managi
 
 **Live Demo:** https://musical-instrument-store.vercel.app/  
 **Stack:** React, Vite, TypeScript, Redux Toolkit, TailwindCSS, Node.js, Express, GraphQL, MongoDB, Stripe, Google OAuth, OpenAI
-
+**Figma:** https://www.figma.com/design/9DBGg9WqrLet1KMu1c2nl2/MusicalInstrumentStore?node-id=0-1&t=Is7fH2M8o8JCQe41-1
 ---
 
 ## Features
