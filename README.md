@@ -15,14 +15,14 @@ A full-stack e-commerce web application for browsing musical instruments, managi
 - View cart summary and total cost  
 - Checkout securely with Stripe
 
+### AI-Powered Suggestions
+- OpenAI API powered chatbot to ask anything about instruments, learning music, or studio gear. 
+- AI Bundle Generator where you describe what you need, and MuseBot will build a personalized kit.
+
 ### Authentication
 - Google OAuth 2.0 login (Passport)  
 - Cookie-based sessions  
 - Protected routes on the backend
-
-### AI-Powered Suggestions
-- OpenAI API generates simple product suggestions  
-- Based on instrument category & price context
 
 ### Architecture
 - Fully typed **TypeScript** (frontend & backend)  
